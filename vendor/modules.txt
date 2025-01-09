@@ -1,0 +1,8 @@
+# github.com/dsnet/compress v0.0.1
+## explicit; go 1.9
+github.com/dsnet/compress
+github.com/dsnet/compress/bzip2
+github.com/dsnet/compress/bzip2/internal/sais
+github.com/dsnet/compress/internal
+github.com/dsnet/compress/internal/errors
+github.com/dsnet/compress/internal/prefix
