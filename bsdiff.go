@@ -24,7 +24,7 @@ func Diff(oldBinary, newBinary []byte) (patch []byte, err error) {
 	var dblen, eblen int
 
 	// create the patch file
-	pf := new(BufWriter)
+	pf := new(bufWriter)
 
 	// Header is
 	//	0	8	 "BSDIFF40"

@@ -32,7 +32,7 @@ func file(oldfile, newfile, patchfile string) (err error) {
 		return fmt.Errorf("could not read newfile '%v': %w", newfile, err)
 	}
 	if diffbytes, err = bsdiff.Diff(oldbs, newbs); err != nil {
-		return fmt.Errorf("bsdiff: %v", err.Error())
+		return fmt.Errorf("bsdiff: %w", err)
 	}
 	if err = os.WriteFile(patchfile, diffbytes, 0o644); err != nil {
 		return fmt.Errorf("could not create patchfile '%v': %w", patchfile, err)

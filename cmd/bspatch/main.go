@@ -26,16 +26,16 @@ func file(oldfile, newfile, patchfile string) (err error) {
 		oldbs, patchbs, newbytes []byte
 	)
 	if oldbs, err = os.ReadFile(oldfile); err != nil {
-		return fmt.Errorf("could not read oldfile '%v': %v", oldfile, err.Error())
+		return fmt.Errorf("could not read oldfile '%v': %w", oldfile, err)
 	}
 	if patchbs, err = os.ReadFile(patchfile); err != nil {
-		return fmt.Errorf("could not read patchfile '%v': %v", patchfile, err.Error())
+		return fmt.Errorf("could not read patchfile '%v': %w", patchfile, err)
 	}
 	if newbytes, err = bsdiff.Patch(oldbs, patchbs); err != nil {
-		return fmt.Errorf("bspatch: %v", err.Error())
+		return fmt.Errorf("bspatch: %w", err)
 	}
 	if err = os.WriteFile(newfile, newbytes, 0o644); err != nil {
-		return fmt.Errorf("could not create newfile '%v': %v", newfile, err.Error())
+		return fmt.Errorf("could not create newfile '%v': %w", newfile, err)
 	}
 	return nil
 }

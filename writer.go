@@ -10,17 +10,17 @@ import (
 	"sync"
 )
 
-// BufWriter is byte slice buffer that implements io.WriteSeeker
-type BufWriter struct {
+// bufWriter is byte slice buffer that implements io.WriteSeeker
+type bufWriter struct {
 	lock sync.Mutex
 	buf  []byte
 	pos  int
 }
 
-var _ io.Writer = (*BufWriter)(nil)
+var _ io.Writer = (*bufWriter)(nil)
 
 // Write the contents of p and return the bytes written
-func (m *BufWriter) Write(p []byte) (n int, err error) {
+func (m *bufWriter) Write(p []byte) (n int, err error) {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 	if m.buf == nil {
@@ -42,7 +42,7 @@ func (m *BufWriter) Write(p []byte) (n int, err error) {
 }
 
 // Seek to a position on the byte slice
-func (m *BufWriter) Seek(offset int64, whence int) (int64, error) {
+func (m *bufWriter) Seek(offset int64, whence int) (int64, error) {
 	newPos, offs := 0, int(offset)
 	switch whence {
 	case io.SeekStart:
@@ -60,12 +60,12 @@ func (m *BufWriter) Seek(offset int64, whence int) (int64, error) {
 }
 
 // Len returns the length of the internal byte slice
-func (m *BufWriter) Len() int {
+func (m *bufWriter) Len() int {
 	return len(m.buf)
 }
 
 // Bytes return a copy of the internal byte slice
-func (m *BufWriter) Bytes() []byte {
+func (m *bufWriter) Bytes() []byte {
 	b2 := make([]byte, len(m.buf))
 	copy(b2, m.buf)
 	return b2

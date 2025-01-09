@@ -14,7 +14,7 @@ import (
 )
 
 // Patch takes the oldBinary and a patch file and produces the new binary or an error.
-func Patch(oldBinary, patch []byte) ([]byte, error) {
+func Patch(oldBinary, patch []byte) (newBinary []byte, err error) {
 	oldsize := len(oldBinary)
 	var newsize int
 	header := make([]byte, 32)
@@ -38,9 +38,10 @@ func Patch(oldBinary, patch []byte) ([]byte, error) {
 	//	extra block; seek forwards in oldBinary by z bytes".
 
 	// Read header
-	if n, err := f.Read(header); err != nil || n < 32 {
+	var n int
+	if n, err = f.Read(header); err != nil || n < 32 {
 		if err != nil {
-			return nil, fmt.Errorf("corrupt patch %v", err.Error())
+			return nil, fmt.Errorf("corrupt patch %w", err)
 		}
 		return nil, fmt.Errorf("corrupt patch (n %v < 32)", n)
 	}
@@ -95,11 +96,7 @@ func Patch(oldBinary, patch []byte) ([]byte, error) {
 		for i = 0; i <= 2; i++ {
 			lenread, err = zreadall(cpfbz2, buf, 8)
 			if lenread != 8 || (err != nil && err != io.EOF) {
-				e0 := ""
-				if err != nil {
-					e0 = err.Error()
-				}
-				return nil, fmt.Errorf("corrupt patch or bzstream ended: %s (read: %v/8)", e0, lenread)
+				return nil, fmt.Errorf("corrupt patch or bzstream ended: %w (read: %v/8)", err, lenread)
 			}
 			ctrl[i] = offtin(buf)
 		}
@@ -112,11 +109,7 @@ func Patch(oldBinary, patch []byte) ([]byte, error) {
 		// lenread, err = dpfbz2.Read(pnew[newpos : newpos+ctrl[0]])
 		lenread, err = zreadall(dpfbz2, pnew[newpos:newpos+ctrl[0]], ctrl[0])
 		if lenread < ctrl[0] || (err != nil && err != io.EOF) {
-			e0 := ""
-			if err != nil {
-				e0 = err.Error()
-			}
-			return nil, fmt.Errorf("corrupt patch or bzstream ended (2): %s", e0)
+			return nil, fmt.Errorf("corrupt patch or bzstream ended (2): %w", err)
 		}
 		// Add pold data to diff string
 		for i = 0; i < ctrl[0]; i++ {
@@ -139,11 +132,7 @@ func Patch(oldBinary, patch []byte) ([]byte, error) {
 		// it was encapsulated by zreadall to work around the issue
 		lenread, err = zreadall(epfbz2, pnew[newpos:newpos+ctrl[1]], ctrl[1])
 		if lenread < ctrl[1] || (err != nil && err != io.EOF) {
-			e0 := ""
-			if err != nil {
-				e0 = err.Error()
-			}
-			return nil, fmt.Errorf("corrupt patch or bzstream ended (3): %s", e0)
+			return nil, fmt.Errorf("corrupt patch or bzstream ended (3): %w", err)
 		}
 		// Adjust pointers
 		newpos += ctrl[1]
