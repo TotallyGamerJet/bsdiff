@@ -9,6 +9,8 @@ The original algorithm and implementation was developed by Colin Percival.  The
 algorithm is detailed in his paper, [Naïve Differences of Executable Code](http://www.daemonology.net/papers/bsdiff.pdf).  For more information, visit his
 website at <http://www.daemonology.net/bsdiff/>.
 
+This code is a trimmed down and updated version of [gabstv/go-bsdiff](https://github.com/gabstv/go-bsdiff).
+
 ## Install
 
 ```shell
