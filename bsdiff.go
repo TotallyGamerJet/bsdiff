@@ -7,6 +7,7 @@ package bsdiff
 
 import (
 	"bytes"
+	"encoding/binary"
 	"io"
 
 	"github.com/dsnet/compress/bzip2"
@@ -273,38 +274,11 @@ func matchlen(oldbin []byte, newbin []byte) int {
 
 // offtout puts an int64 (little endian) to buf
 func offtout(x int, buf []byte) {
-	var y int
+	var y = uint64(x)
 	if x < 0 {
-		y = -x
-	} else {
-		y = x
+		y = uint64(-x) | (0x80 << 56)
 	}
-	buf[0] = byte(y % 256)
-	y -= int(buf[0])
-	y = y / 256
-	buf[1] = byte(y % 256)
-	y -= int(buf[1])
-	y = y / 256
-	buf[2] = byte(y % 256)
-	y -= int(buf[2])
-	y = y / 256
-	buf[3] = byte(y % 256)
-	y -= int(buf[3])
-	y = y / 256
-	buf[4] = byte(y % 256)
-	y -= int(buf[4])
-	y = y / 256
-	buf[5] = byte(y % 256)
-	y -= int(buf[5])
-	y = y / 256
-	buf[6] = byte(y % 256)
-	y -= int(buf[6])
-	y = y / 256
-	buf[7] = byte(y % 256)
-
-	if x < 0 {
-		buf[7] |= 0x80
-	}
+	binary.LittleEndian.PutUint64(buf, y)
 }
 
 func qsufsort(iii []int, buf []byte) {

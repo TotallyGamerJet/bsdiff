@@ -7,6 +7,7 @@ package bsdiff
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 	"io"
 
@@ -161,27 +162,11 @@ func Patch(oldBinary, patch []byte) (newBinary []byte, err error) {
 
 // offtin reads an int64 (little endian)
 func offtin(buf []byte) int {
-
-	y := int(buf[7] & 0x7f)
-	y = y * 256
-	y += int(buf[6])
-	y = y * 256
-	y += int(buf[5])
-	y = y * 256
-	y += int(buf[4])
-	y = y * 256
-	y += int(buf[3])
-	y = y * 256
-	y += int(buf[2])
-	y = y * 256
-	y += int(buf[1])
-	y = y * 256
-	y += int(buf[0])
-
-	if (buf[7] & 0x80) != 0 {
-		y = -y
+	y := binary.LittleEndian.Uint64(buf)
+	if (y>>56)&0x80 != 0 {
+		return -int(y & 0x7FFFFFFF)
 	}
-	return y
+	return int(y & 0x7FFFFFFF)
 }
 
 func zreadall(r io.Reader, b []byte, expected int) (int, error) {

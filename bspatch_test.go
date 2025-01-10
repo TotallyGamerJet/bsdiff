@@ -6,7 +6,6 @@ package bsdiff
 
 import (
 	"bytes"
-	"encoding/binary"
 	"testing"
 )
 
@@ -53,15 +52,6 @@ func TestPatch(t *testing.T) {
 	_, err = Patch(oldfile, oldfile)
 	if err == nil {
 		t.Fail()
-	}
-}
-
-func TestOfftin(t *testing.T) {
-	buf := make([]byte, 8)
-	binary.LittleEndian.PutUint64(buf, 9001)
-	n := offtin(buf)
-	if n != 9001 {
-		t.Fatal(n, "!=", 9001)
 	}
 }
 

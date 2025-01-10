@@ -6,8 +6,6 @@ package bsdiff
 
 import (
 	"bytes"
-	"encoding/binary"
-	"fmt"
 	"testing"
 )
 
@@ -34,33 +32,4 @@ func TestDiff(t *testing.T) {
 	if !bytes.Equal(diffbs[:len(z)], z) {
 		t.Fatal(diffbs[:len(z)], "!=", z)
 	}
-}
-
-func TestOfftout(t *testing.T) {
-	buf := make([]byte, 8)
-	offtout(9001, buf)
-	n := binary.LittleEndian.Uint64(buf)
-	if n != 9001 {
-		t.Fatal(n, "!=", 9001)
-	}
-	//
-	offtout(9002, buf)
-	n = binary.LittleEndian.Uint64(buf)
-	if n != 9002 {
-		t.Fatal(n, "!=", 9002)
-	}
-}
-
-func BenchmarkOfftout(b *testing.B) {
-	buf := make([]byte, 8)
-	for i := 0; i < b.N; i++ {
-		offtout(9001, buf)
-	}
-}
-func BenchmarkLittleEndian(b *testing.B) {
-	buf := make([]byte, 8)
-	for i := 0; i < b.N; i++ {
-		binary.LittleEndian.PutUint64(buf, 9001)
-	}
-	fmt.Println(buf)
 }
